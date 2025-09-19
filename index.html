@@ -195,6 +195,8 @@
         .charImg.lg {
             width: 280px;
         }
+
+        .postbox-btn{ cursor:pointer; pointer-events:auto; }
     </style>
 </head>
 <body>
@@ -226,7 +228,7 @@
         <div class="band" id="treesBand">
             <img class="treeImg sm" src="./assets/tree.svg" alt="Tree" style="margin-left:6vw">
             <img class="treeImg" src="./assets/tree.svg" alt="Tree">
-            <img class="treeImg xs" src="./assets/postbox.svg" alt="Postbox">
+            <img id="postbox" class="treeImg xs postbox-btn" src="./assets/postbox.svg" alt="Postbox">
             <img class="treeImg flip" src="./assets/tree.svg" alt="Tree">
             <img class="treeImg" src="./assets/tree.svg" alt="Tree">
             <img class="treeImg sm" src="./assets/tree.svg" alt="Tree">
@@ -266,6 +268,195 @@
 
 <section><h2>Фініш сцени</h2></section>
 
+<!-- ⭐ POP-ART / COMIC POPUP — СХОВАНИЙ ЗА ЗАМОВЧУВАННЯМ -->
+<!-- === COMIC POPUP (clean & isolated) === -->
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+    /* --- NAMESPACE: pc-* --- */
+    .pc-backdrop[hidden],
+    .pc-root[hidden] { display:none !important; }
+
+    .pc-backdrop{
+        position:fixed; inset:0; z-index:9998;
+        background: rgba(0,0,0,.18);             /* легка напівпрозора підложка */
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .pc-root{
+        position:fixed; z-index:9999; inset:auto 50% auto 50%;
+        transform: translate(-50%, -50%) scale(.92) rotate(-0.6deg);
+        top:50%; left:50%;
+        width:min(540px, 92vw);                   /* мобайл/планшет */
+        max-height: 82vh; overflow:auto;
+        border: 5px solid #111;
+        border-radius: 24px;
+        box-shadow: 12px 12px 0 #111;
+        background:
+                radial-gradient(circle at 2px 2px, rgba(255,38,74,.35) 1.6px, transparent 1.7px) 0 0/8px 8px,
+                radial-gradient(circle at 4px 4px, rgba(18,82,255,.28) 1.4px, transparent 1.5px) 0 0/8px 8px,
+                #ffe977;                                 /* теплий жовтий «папір» */
+        color:#111;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+        padding: 22px 18px 20px;
+        opacity:0; pointer-events:none;
+        transition: transform .28s cubic-bezier(.2,.8,.2,1), opacity .22s ease;
+    }
+
+    .pc-root.pc--visible{
+        opacity:1; pointer-events:auto;
+        transform: translate(-50%, -50%) scale(1) rotate(-0.6deg);
+    }
+
+    /* десктоп: максимум 50% ширини екрана */
+    @media (min-width: 1024px){
+        .pc-root{ width: min(50vw, 720px); }
+    }
+
+    /* внутрішній «коміксний» кант */
+    .pc-root::before{
+        content:""; position:absolute; inset:8px; border-radius:18px; z-index:0; pointer-events:none;
+        background: repeating-linear-gradient(135deg,
+        #ff1744 0 12px, #fff 12px 18px, #1e3aff 18px 28px, #fff 28px 34px, #ffd400 34px 44px, #fff 44px 50px);
+        mix-blend-mode:multiply; opacity:.18;
+    }
+
+    .pc-header{ display:flex; align-items:flex-start; gap:10px; position:relative; z-index:1; }
+    .pc-title{
+        margin:0; font-family:"Bangers", cursive; letter-spacing:.6px;
+        font-size: 40px; line-height:1; color:#111;
+        text-shadow: 2px 2px 0 #fff, 5px 5px 0 #111;
+    }
+    .pc-burst{
+        margin-left:auto; transform: rotate(7deg);
+        background:#ffd400; color:#111;
+        border:4px solid #111; border-radius:999px;
+        font-family:"Bangers", cursive; font-size:18px; padding:6px 10px;
+        box-shadow:6px 6px 0 #111;
+    }
+    .pc-close{
+        margin-left:10px; width:42px; height:42px; flex:0 0 42px;
+        display:grid; place-items:center; cursor:pointer;
+        border:4px solid #111; border-radius:50%; background:#fff;
+        box-shadow:5px 5px 0 #111; font-weight:800; font-family:"Bangers", cursive; font-size:20px;
+    }
+
+    .pc-sub{ margin:8px 2px 12px; font-weight:600; color:#222; z-index:1; position:relative; }
+
+    .pc-form{ display:grid; grid-template-columns:1fr 1fr; gap:12px; z-index:1; position:relative; }
+    .pc-full{ grid-column:1 / -1; }
+    .pc-field{ display:grid; gap:6px; }
+    .pc-label{ font-weight:800; text-transform:uppercase; letter-spacing:.5px; font-size:12px; display:flex; gap:6px; align-items:center;}
+    .pc-tag{ border:3px solid #111; background:#fff; padding:0 8px; border-radius:999px; box-shadow:3px 3px 0 #111; font-weight:800; font-size:11px;}
+
+    .pc-input, .pc-textarea{
+        border:3px solid #111; border-radius:14px; background:#fff;
+        padding:12px 14px; font-size:15px; outline:none; color:#111;
+        box-shadow:4px 4px 0 #111;
+    }
+    .pc-textarea{ min-height:120px; resize:vertical; }
+
+    .pc-row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .pc-check{
+        display:flex; align-items:center; gap:8px; font-size:13px;
+        border:3px solid #111; border-radius:12px; padding:8px 10px; background:#fff; box-shadow:4px 4px 0 #111;
+    }
+
+    .pc-actions{ margin-top:6px; display:flex; gap:12px; align-items:center; }
+    .pc-btn{
+        border:3px solid #111; border-radius:14px; padding:12px 16px; cursor:pointer;
+        box-shadow:4px 4px 0 #111; font-weight:800; text-transform:uppercase; letter-spacing:.5px;
+    }
+    .pc-btn.pc-primary{ background:#ff1744; color:#fff; }
+    .pc-btn.pc-secondary{ background:#fff; color:#111; box-shadow:4px 4px 0 #111, 0 0 0 3px inset; /*border-color:#ff1744;*/ }
+
+    @media (max-width: 640px){
+        .pc-form{ grid-template-columns:1fr; }
+        .pc-title{ font-size:34px; }
+    }
+</style>
+
+<!-- backdrop -->
+<div id="pc-backdrop" class="pc-backdrop" hidden></div>
+
+<!-- popup -->
+<div id="pc-popup" class="pc-root" role="dialog" aria-modal="true" aria-labelledby="pc-title" aria-describedby="pc-sub" hidden>
+    <div class="pc-header">
+        <h2 id="pc-title" class="pc-title">Напиши мені</h2>
+        <span class="pc-burst">WOW!</span>
+        <button type="button" class="pc-close" id="pc-close" aria-label="Закрити">×</button>
+    </div>
+
+    <p id="pc-sub" class="pc-sub">Питання, співпраця чи ідея? Заповни форму — відповім максимально швидко.</p>
+
+    <form class="pc-form" action="#" method="post" novalidate>
+        <div class="pc-field">
+            <label class="pc-label" for="pc-name"><span class="pc-tag">NAME</span> Ім’я</label>
+            <input class="pc-input" id="pc-name" name="name" type="text" placeholder="Твоє ім’я" autocomplete="name" required>
+        </div>
+
+        <div class="pc-field">
+            <label class="pc-label" for="pc-email"><span class="pc-tag">MAIL</span> Email</label>
+            <input class="pc-input" id="pc-email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required>
+        </div>
+
+        <div class="pc-field pc-full">
+            <label class="pc-label" for="pc-msg"><span class="pc-tag">MSG</span> Повідомлення</label>
+            <textarea class="pc-textarea" id="pc-msg" name="message" placeholder="Коротко про суть" required></textarea>
+        </div>
+
+        <div class="pc-row pc-full">
+            <label class="pc-check"><input type="checkbox" name="newsletter"> Хочу отримувати оновлення</label>
+            <label class="pc-check"><input type="checkbox" name="telegram_ok"> Можна зв’язатися в Telegram</label>
+        </div>
+
+        <div class="pc-actions pc-full">
+            <button class="pc-btn pc-secondary" type="reset">
+                <span aria-hidden="true" style="margin-right:8px">☢️</span>
+                <span>Очистити</span>
+            </button>
+            <button class="pc-btn pc-primary" type="submit">Надіслати 🚀</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // open/close без залежностей, прив'язка до #postbox
+    (function(){
+        const trigger  = document.getElementById('postbox'); // твоя скринька
+        const popup    = document.getElementById('pc-popup');
+        const backdrop = document.getElementById('pc-backdrop');
+        const closeBtn = document.getElementById('pc-close');
+        let lastFocus;
+
+        const open = () => {
+            lastFocus = document.activeElement;
+            backdrop.hidden = false;
+            popup.hidden = false;
+            requestAnimationFrame(()=> popup.classList.add('pc--visible'));
+            document.body.style.overflow = 'hidden';
+            // фокус у форму
+            setTimeout(()=> document.getElementById('pc-name')?.focus(), 60);
+        };
+        const close = () => {
+            popup.classList.remove('pc--visible');
+            document.body.style.overflow = '';
+            setTimeout(()=>{
+                popup.hidden = true;
+                backdrop.hidden = true;
+                lastFocus && lastFocus.focus?.();
+            }, 200);
+        };
+
+        trigger?.addEventListener('click', open);
+        backdrop?.addEventListener('click', close);
+        closeBtn?.addEventListener('click', close);
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && !popup.hidden) close(); });
+    })();
+</script>
+<!-- === /COMIC POPUP === -->
+
+
 <!-- GSAP -->
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
@@ -300,6 +491,33 @@
             delay: i * 0.18
         });
     });
+</script>
+<script>
+    (function(){
+        const postbox   = document.getElementById('postbox');
+        const popup     = document.getElementById('comic-popup');
+        const backdrop  = document.getElementById('comic-backdrop');
+        const btnClose  = document.getElementById('comic-close');
+
+        const open = () => {
+            popup.classList.remove('hidden');
+            backdrop.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        };
+        const close = () => {
+            popup.classList.add('hidden');
+            backdrop.classList.add('hidden');
+            document.body.style.overflow = '';
+        };
+
+        postbox?.addEventListener('click', open);
+        btnClose?.addEventListener('click', close);
+        backdrop?.addEventListener('click', close);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !popup.classList.contains('hidden')) close();
+        });
+    })();
 </script>
 </body>
 </html>
