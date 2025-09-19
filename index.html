@@ -807,12 +807,81 @@
             }
         }
 
+        /* === Fixed Header === */
+        .site-header{
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 10000;
+            height: 64px;
+            display: flex; align-items: center; gap: 16px;
+            padding: 0 18px;
+            backdrop-filter: blur(10px);
+            background: linear-gradient(180deg, rgba(10,14,30,.72), rgba(10,14,30,.46));
+            border-bottom: 1px solid rgba(255,255,255,.08);
+        }
+
+        .site-header .logo{
+            font-family: "Bangers", cursive;
+            font-size: 26px; letter-spacing: .6px;
+            color: #fff; text-decoration: none;
+            text-shadow: 2px 2px 0 #111;
+        }
+
+        .main-nav{
+            margin-left: auto;
+            display:flex; gap: 12px; flex-wrap: wrap;
+        }
+
+        .nav-link{
+            position: relative;
+            display: inline-flex; align-items: center;
+            height: 36px; padding: 0 12px;
+            border-radius: 10px;
+            color: #e9f2ff; text-decoration: none;
+            font-weight: 700; letter-spacing: .2px;
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.10);
+            transition: transform .15s ease, background .15s ease, border-color .15s ease;
+        }
+
+        .nav-link:hover{ transform: translateY(-1px); background: rgba(255,255,255,.10); }
+        .nav-link.active{
+            background: #ffd400; color: #111;
+            border-color: #111;
+            box-shadow: 4px 4px 0 #111;
+        }
+
+        /* щоб контент не залазив під хедер */
+        body{ padding-top: 64px; }
+
+        /* щоб якір ставав нижче хедера при нативному scrollIntoView */
+        section, .stage{ scroll-margin-top: 72px; }
+
+        @media (max-width:780px){
+            .site-header{ height: 58px; padding: 0 12px; }
+            body{ padding-top: 58px; }
+            .nav-link{ height: 34px; padding: 0 10px; font-size: 14px; }
+        }
+
+
 
 
 
     </style>
 </head>
 <body>
+<!-- === FIXED HEADER === -->
+<header class="site-header" id="siteHeader">
+    <a class="logo" href="#stage">CyberGame</a>
+    <nav class="main-nav" aria-label="Main">
+        <a class="nav-link" href="#stage"        data-target="#stage">Початок</a>
+        <a class="nav-link" href="#phone"        data-target="#phone">Телефон</a>
+        <a class="nav-link" href="#gorilla"      data-target="#gorilla">Горіла</a>
+        <a class="nav-link" href="#char-2"       data-target="#char-2">Кібер бой</a>
+        <a class="nav-link" href="#billboard"    data-target="#billboard">Відео</a>
+    </nav>
+</header>
+
 
 <section><h1>Прокрути вниз — GSAP паралакс</h1></section>
 
@@ -882,7 +951,7 @@
 </div>
 
 <!-- ===== PHONE SECTION ===== -->
-<section class="phone-section">
+<section class="phone-section" id="phone">
     <div class="phone-wrap">
         <!-- ✋ Рука -->
         <img class="hand" src="./assets/hand.png" alt="Hand holding phone">
@@ -947,7 +1016,7 @@
 
 
 <!-- ===== BILLBOARD (video) ===== -->
-<section class="billboard-section" aria-label="Відео про комікси">
+<section class="billboard-section" aria-label="Відео про комікси" id="billboard">
     <div class="billboard">
         <div class="billboard-screen">
             <!-- використовуємо ПРАВИЛЬНИЙ embed + nocookie -->
@@ -1095,6 +1164,55 @@
         // once: true
     });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollToPlugin.min.js"></script>
+<script>
+    gsap.registerPlugin(ScrollToPlugin);
+
+    // клік по меню -> плавний скрол з урахуванням висоти хедера
+    const header = document.getElementById('siteHeader');
+    const links  = document.querySelectorAll('.nav-link');
+
+    links.forEach(a => {
+        a.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = document.querySelector(a.dataset.target || a.getAttribute('href'));
+            if(!target) return;
+
+            const offsetY = header.offsetHeight + 6; // невеликий зазор
+            gsap.to(window, {
+                duration: 0.8,
+                ease: 'power2.out',
+                scrollTo: { y: target, offsetY }
+            });
+        });
+    });
+
+    // підсвітка активного пункту меню під час скролу
+    [
+        {id:'#stage',     link:'[data-target="#stage"]'},
+        {id:'#phone',     link:'[data-target="#phone"]'},
+        {id:'#gorilla',   link:'[data-target="#gorilla"]'},
+        {id:'#char-2',    link:'[data-target="#char-2"]'},
+        {id:'#billboard', link:'[data-target="#billboard"]'},
+    ].forEach(({id, link})=>{
+        const el = document.querySelector(id);
+        const a  = document.querySelector(link);
+        if(!el || !a) return;
+
+        ScrollTrigger.create({
+            trigger: el,
+            start: 'top center',
+            end: 'bottom center',
+            onEnter:  () => setActive(a),
+            onEnterBack: () => setActive(a)
+        });
+    });
+
+    function setActive(activeLink){
+        links.forEach(l => l.classList.toggle('active', l === activeLink));
+    }
+</script>
+
 
 
 <script>
