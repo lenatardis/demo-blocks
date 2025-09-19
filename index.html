@@ -875,6 +875,7 @@
         }
         .faq-wrap{
             width: min(820px, 92vw);
+            will-change: transform, opacity;
         }
         .faq-title{
             margin: 0 0 18px;
@@ -1663,6 +1664,27 @@
         allowTouchMove: false
     });
 </script>
+<script>
+    // стартовий стан і виїзд зліва, коли саме .faq-wrap заходить у вʼюпорт
+    gsap.from('.faq-wrap', {
+        x: -80,
+        autoAlpha: 0,
+        duration: 0.6,
+        ease: 'power3.out',
+        scrollTrigger: {
+            trigger: '.faq-wrap',
+            start: 'top 88%',   // коли верх .faq-wrap доходить ~до нижньої третини екрану
+            once: true          // анімація лише один раз
+            // markers: true    // увімкни для дебагу, якщо треба
+        }
+    });
+
+    // на всякий — оновити розрахунки після завантаження всіх зображень/iframe
+    window.addEventListener('load', () => ScrollTrigger.refresh());
+</script>
+
+
+
 
 </body>
 </html>
