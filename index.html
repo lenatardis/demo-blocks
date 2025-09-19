@@ -204,6 +204,27 @@
             .pc-form{ grid-template-columns:1fr; }
             .pc-title{ font-size:34px; }
         }
+
+        /* стартовий струс при відкритті */
+        @media (prefers-reduced-motion: no-preference){
+            .pc-root{ transform-origin:center; will-change:transform; }
+
+            .pc-root.pc--shaking{
+                animation: pc-shake 520ms cubic-bezier(.18,.88,.26,1.12) 1;
+            }
+
+            @keyframes pc-shake{
+                /* базова поза: як у тебе */
+                0%   { transform: translate(-50%,-50%) scale(1) rotate(-0.6deg); }
+                15%  { transform: translate(calc(-50% + 2px), calc(-50% + 1px)) rotate(-1.2deg) scale(1.01); }
+                30%  { transform: translate(calc(-50% - 2px), calc(-50% - 1px)) rotate(0.2deg)  scale(.995); }
+                45%  { transform: translate(calc(-50% + 1px), calc(-50% - 2px)) rotate(-0.9deg) scale(1.008); }
+                60%  { transform: translate(calc(-50% - 1px), calc(-50% + 2px)) rotate(-0.2deg) scale(.998); }
+                75%  { transform: translate(calc(-50% + .5px), calc(-50% + .5px)) rotate(-0.7deg) scale(1.004); }
+                100% { transform: translate(-50%,-50%) scale(1) rotate(-0.6deg); }
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -360,7 +381,11 @@
             lastFocus = document.activeElement;
             backdrop.hidden = false;
             popup.hidden = false;
-            requestAnimationFrame(()=> popup.classList.add('pc--visible'));
+            requestAnimationFrame(()=> {
+                popup.classList.add('pc--visible');
+                popup.classList.add('pc--shaking');         // ⬅️ вмикаємо shake
+                setTimeout(()=> popup.classList.remove('pc--shaking'), 550); // ⬅️ прибираємо
+            });
             document.body.style.overflow = 'hidden';
             setTimeout(()=> document.getElementById('pc-name')?.focus(), 60);
 
