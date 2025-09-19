@@ -1087,7 +1087,9 @@
             start: "top top",
             end: "+=3000",
             pin: true,
-            scrub: 1
+            scrub: 1,
+            anticipatePin: 1,          // додали
+            invalidateOnRefresh: true  // додали
         }
     });
 
@@ -1168,64 +1170,130 @@
 <script>
     gsap.registerPlugin(ScrollToPlugin, ScrollTrigger);
 
-    const header = document.getElementById('siteHeader');
-    const links  = document.querySelectorAll('.nav-link');
+    // додай після registerPlugin(...)
+    gsap.config({ nullTargetWarn: false });
 
-    // поточна висота хедера (округлена, без “+7” та інших запасів)
+    // хелпер — увімкнути active на потрібному пункті
+    function setActiveById(id) {
+        document.querySelectorAll('.nav-link').forEach(a => {
+            const target = a.dataset.target || a.getAttribute('href');
+            a.classList.toggle('active', target === id);
+        });
+    }
+
+    // висота хедера
+    const header = document.getElementById('siteHeader');
     const headerH = () => Math.round(header.getBoundingClientRect().height);
 
-    // синхронізуємо CSS-змінну для scroll-margin-top
+    // тримаємо CSS-змінну в синхроні
     function syncHeaderVar(){
         document.documentElement.style.setProperty('--header-h', headerH() + 'px');
     }
     syncHeaderVar();
-    addEventListener('resize', syncHeaderVar);
-    addEventListener('load', () => { syncHeaderVar(); ScrollTrigger.refresh(); });
+    addEventListener('resize', () => { syncHeaderVar(); ScrollTrigger.refresh(); });
 
-    // плавний скрол по кліку меню/логотипу з точним відступом = висоті хедера
-    function smoothTo(el){
-        if(!el) return;
+    // плавний скрол + миттєве підсвічування
+    document.querySelectorAll('.nav-link').forEach(a => {
+        a.addEventListener('click', (e) => {
+            e.preventDefault();
+            const sel = a.dataset.target || a.getAttribute('href');
+            setActiveById(sel); // підсвітити одразу
+            gsap.to(window, {
+                duration: 0.8,
+                ease: 'power2.out',
+                scrollTo: { y: sel, offsetY: headerH() }
+            });
+        });
+    });
+    document.querySelector('.logo')?.addEventListener('click', (e)=>{
+        e.preventDefault();
+        setActiveById('#stage');
         gsap.to(window, {
             duration: 0.8,
             ease: 'power2.out',
-            scrollTo: { y: el, offsetY: headerH() }
+            scrollTo: { y: '#stage', offsetY: headerH() }
         });
+    });
+
+    // секції для спостереження
+    const sections = ['#stage','#phone','#gorilla','#char-2','#billboard'];
+
+    // головний горизонтальний паралакс — додай anticipatePin, щоб інші тригери не «глючили»
+
+
+    // підсвічування активного пункту у процесі скролу
+    // --- НАЙСТАБІЛЬНІШИЙ СПОСІБ АКТИВУ ---
+    // що впритул під хедером – те активне (незалежно від pin/transform)
+
+    const SECTIONS = ['#stage', '#phone', '#gorilla', '#char-2', '#billboard'];
+    let currentActive = null;
+    let rafRunning = false;
+
+    function updateActive() {
+        rafRunning = false;
+        const y = headerH();             // "лінія перевірки" – низ хедера
+        const hysteresis = 10;           // щоб не тремтіло на межі
+
+        let winner = null;
+
+        for (const id of SECTIONS) {
+            const el = document.querySelector(id);
+            if (!el) continue;
+            const r = el.getBoundingClientRect();
+
+            // активна секція: її top <= лінія, а bottom > лінії (з невеликим гістерезисом)
+            if (r.top <= y + hysteresis && r.bottom > y + hysteresis) {
+                winner = id;
+                break;
+            }
+        }
+
+        // Якщо жодна не перекриває лінію (наприклад, інерція скролу),
+        // вибираємо ту, чий top найближчий до лінії знизу/зверху.
+        if (!winner) {
+            let bestDist = Infinity;
+            for (const id of SECTIONS) {
+                const r = document.querySelector(id).getBoundingClientRect();
+                const dist = Math.abs(r.top - y);
+                if (dist < bestDist) { bestDist = dist; winner = id; }
+            }
+        }
+
+        if (winner && winner !== currentActive) {
+            currentActive = winner;
+            setActiveById(winner);
+        }
     }
 
-    links.forEach(a => {
-        a.addEventListener('click', (e) => {
-            e.preventDefault();
-            smoothTo(document.querySelector(a.dataset.target || a.getAttribute('href')));
-        });
+    // тротлимо скрол: рахуємо один раз на кадр
+    function onScroll() {
+        if (!rafRunning) {
+            rafRunning = true;
+            requestAnimationFrame(updateActive);
+        }
+    }
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', () => { syncHeaderVar(); updateActive(); });
+
+    // ініціалізація
+    addEventListener('load', () => {
+        updateActive();
+        ScrollTrigger.refresh(); // залишаємо для GSAP-анімацій
     });
 
-    document.querySelector('.logo')?.addEventListener('click', (e)=>{
-        e.preventDefault();
-        smoothTo(document.querySelector(e.currentTarget.getAttribute('href')));
+
+    // стартова ініціалізація під новий підхід
+    addEventListener('load', () => {
+        const hash = window.location.hash;
+        // якщо відкрились одразу з #якорем — доскролимо з відступом під хедер
+        if (hash && document.querySelector(hash)) {
+            gsap.set(window, { scrollTo: { y: hash, offsetY: headerH(), autoKill: false } });
+        }
+        updateActive();          // порахувати й підсвітити актуальний пункт
+        ScrollTrigger.refresh(); // для GSAP-анімацій
     });
 
-    // підсвітка активного пункту: активуй, коли ВЕРХ секції пройде під НИЗом хедера,
-    // і тримай активним до моменту, коли НИЗ секції підійде до НИЗу хедера.
-    const map = [
-        {id:'#stage',     link:'[data-target="#stage"]'},
-        {id:'#phone',     link:'[data-target="#phone"]'},
-        {id:'#gorilla',   link:'[data-target="#gorilla"]'},
-        {id:'#char-2',    link:'[data-target="#char-2"]'},
-        {id:'#billboard', link:'[data-target="#billboard"]'},
-    ];
 
-    map.forEach(({id, link})=>{
-        const section = document.querySelector(id);
-        const anchor  = document.querySelector(link);
-        if(!section || !anchor) return;
-
-        ScrollTrigger.create({
-            trigger: section,
-            start: () => `top+=${headerH()} top`,
-            end:   () => `bottom-=${headerH()} top`,
-            toggleClass: { targets: anchor, className: 'active' }
-        });
-    });
 </script>
 
 
