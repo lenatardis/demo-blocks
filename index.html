@@ -260,11 +260,24 @@
         /* ======= BILLBOARD ======= */
         /* ======= BILLBOARD (з твоєю bigboard.svg) ======= */
         .billboard-section{
-            padding:56px 0 80px;
             position:relative;
             background:
-                    radial-gradient(900px 420px at 70% 0%, #2a115a55 0%, transparent 60%),
-                    transparent;
+                    radial-gradient(1200px 680px at 60% -10%, #2cff88 0%, #19d173 32%, #0fa35b 58%, #0a6f43 78%, #073726 100%);
+            place-items: normal;
+            align-content: flex-end;
+            /*min-height: 60vh;*/
+          /*  height: auto;*/
+        }
+
+        /* напівпрозорий комікс-гальфтон */
+        .billboard-section::before{
+            content:"";
+            position:absolute; inset:0; pointer-events:none;
+            background:
+                    radial-gradient(circle at 12px 12px, #ffffff25 2.2px, transparent 2.4px) 0 0/16px 16px,
+                    radial-gradient(circle at 6px 6px,   #00000018 1.2px, transparent 1.4px) 0 0/12px 12px;
+            mix-blend-mode:overlay;
+            opacity:.28;
         }
 
         /* сам білборд як картинка-рамка */
