@@ -4,6 +4,8 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>GSAP Horizontal Parallax — хмари / дерева / персонажі</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
 
     <!-- Основні стилі сцени -->
     <style>
@@ -225,6 +227,58 @@
             }
         }
 
+        /* --- Phone slider --- */
+        .phone-section{
+            /* темний фон як у сусідніх секціях уже є; лишаємо */
+            display:grid; place-items:center; position:relative; overflow:hidden;
+        }
+
+        .phone-wrap{
+            position:relative;
+            width:min(520px, 86vw);
+            /* за потреби збільш/зменш: 520px → 600px або 460px */
+        }
+
+        /* Каркас */
+        .phone-frame{
+            width:100%;
+            height:auto;
+            display:block;
+            filter: drop-shadow(0 18px 38px rgba(0,0,0,.35));
+        }
+
+        /* Координати "активної" області екрана всередині SVG
+           Підігнати можна цими змінними: */
+        .phone-screen{
+            --screen-top: 9%;       /* зміни якщо отвір екрана в SVG зміщений */
+            --screen-left: 7.5%;
+            --screen-w: 85%;
+            --screen-h: 82%;
+
+            position:absolute;
+            top:var(--screen-top);
+            left:var(--screen-left);
+            width:var(--screen-w);
+            height:var(--screen-h);
+            overflow:hidden;
+            border-radius:24px;
+            box-shadow: inset 0 0 0 2px rgba(0,0,0,.08);
+        }
+
+        /* Swiper всередині "екрана" */
+        .phone-screen .swiper,
+        .phone-screen .swiper-wrapper,
+        .phone-screen .swiper-slide{
+            width:100%; height:100%;
+        }
+
+        .phone-screen img{
+            width:100%; height:100%;
+            object-fit: cover; /* або 'contain', якщо макет із полями */
+            display:block;
+        }
+
+
     </style>
 </head>
 <body>
@@ -292,7 +346,23 @@
     </div>
 </div>
 
-<section><h2>Фініш сцени</h2></section>
+<section class="phone-section">
+    <div class="phone-wrap">
+        <!-- Каркас телефону -->
+        <img class="phone-frame" src="./assets/phone.svg" alt="Phone frame">
+
+        <!-- Екран усередині телефона (Swiper) -->
+        <div class="phone-screen">
+            <div class="swiper phone-swiper">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide"><img src="./assets/inner_screen.png" alt="Screen 1"></div>
+                    <div class="swiper-slide"><img src="./assets/inner_screen2.png" alt="Screen 2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 
 <!-- Комікс-попап: розмітка -->
 <div id="pc-backdrop" class="pc-backdrop" hidden></div>
@@ -480,5 +550,20 @@
         })(start);
     }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+    // Автовідтворення без навігації/точок
+    const phoneSwiper = new Swiper('.phone-swiper', {
+        loop: true,
+        effect: 'fade',           // плавна зміна екранів; хочеш “залазити” — прибери effect
+        speed: 700,               // швидкість переходу
+        autoplay: {
+            delay: 1800,            // пауза між кадрами
+            disableOnInteraction: false
+        },
+        allowTouchMove: false     // без свайпів (можна ввімкнути: true)
+    });
+</script>
+
 </body>
 </html>
