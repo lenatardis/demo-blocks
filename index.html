@@ -9,310 +9,584 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
     <!-- Шрифти для попапа -->
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap"
+          rel="stylesheet">
 
     <style>
-        :root{
+        :root {
             --char-drop: clamp(28px, 5vh, 72px);
             --cloud-h: 24%;
             --cloud-rise: 46vh;
         }
 
-        html, body{
-            margin:0;
-            background:#0b1020;
-            color:#fff;
-            font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+        html, body {
+            margin: 0;
+            background: #0b1020;
+            color: #fff;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
         }
 
         /* універсальна секція-фон */
-        section{
-            height:100vh;
-            display:grid;
-            place-items:center;
-            position:relative;
-            overflow:hidden;
+        section {
+            height: 100vh;
+            display: grid;
+            place-items: center;
+            position: relative;
+            overflow: hidden;
             background: radial-gradient(1100px 520px at 30% 20%, #2a3a80 0%, #0b1020 62%);
-            color:#fff;
-            opacity:.95;
+            color: #fff;
+            opacity: .95;
         }
-        section::after{
-            content:"";
-            position:absolute; inset:0; pointer-events:none;
-            background-image:
-                    radial-gradient(2px 2px at 10% 20%, #fff8 60%, transparent 61%),
-                    radial-gradient(2px 2px at 30% 70%, #fff8 60%, transparent 61%),
-                    radial-gradient(1.5px 1.5px at 60% 30%, #fff6 60%, transparent 61%),
-                    radial-gradient(1.5px 1.5px at 80% 60%, #fff6 60%, transparent 61%);
-            background-repeat:repeat; background-size:600px 400px;
-            opacity:.18; mix-blend-mode:screen;
+
+        section::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background-image: radial-gradient(2px 2px at 10% 20%, #fff8 60%, transparent 61%),
+            radial-gradient(2px 2px at 30% 70%, #fff8 60%, transparent 61%),
+            radial-gradient(1.5px 1.5px at 60% 30%, #fff6 60%, transparent 61%),
+            radial-gradient(1.5px 1.5px at 80% 60%, #fff6 60%, transparent 61%);
+            background-repeat: repeat;
+            background-size: 600px 400px;
+            opacity: .18;
+            mix-blend-mode: screen;
         }
 
         /* Сцена паралаксу */
-        .stage{ position:relative; height:100vh; overflow:hidden; }
-        .layer{ position:absolute; inset:0; pointer-events:none; }
-        .band{
-            position:absolute; left:0; bottom:0; height:100%; width:300vw;
-            display:flex; align-items:flex-end; will-change:transform;
+        .stage {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
         }
-        .band::after{ content:""; flex:0 0 12vw; }
 
-        #sky    { z-index:1; }
-        #clouds { z-index:2; }
-        #trees  { z-index:3; }
-        #chars  { z-index:4; }
-
-        #sky{
-            background:
-                    radial-gradient(900px 520px at 65% 10%, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 60%),
-                    linear-gradient(180deg,#00E5FF 0%,#22DAFF 30%,#5FE6FF 60%,#C4F7FF 85%,#F2FEFF 100%);
+        .layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
         }
-        #sky::before{
-            content:""; position:absolute; left:50%; top:8vh; transform:translateX(-50%);
-            width:70vmin; height:70vmin; border-radius:50%;
+
+        .band {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 100%;
+            width: 300vw;
+            display: flex;
+            align-items: flex-end;
+            will-change: transform;
+        }
+
+        .band::after {
+            content: "";
+            flex: 0 0 12vw;
+        }
+
+        #sky {
+            z-index: 1;
+        }
+
+        #clouds {
+            z-index: 2;
+        }
+
+        #trees {
+            z-index: 3;
+        }
+
+        #chars {
+            z-index: 4;
+        }
+
+        #sky {
+            background: radial-gradient(900px 520px at 65% 10%, rgba(255, 255, 255, .18) 0%, rgba(255, 255, 255, 0) 60%),
+            linear-gradient(180deg, #00E5FF 0%, #22DAFF 30%, #5FE6FF 60%, #C4F7FF 85%, #F2FEFF 100%);
+        }
+
+        #sky::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 8vh;
+            transform: translateX(-50%);
+            width: 70vmin;
+            height: 70vmin;
+            border-radius: 50%;
             background: radial-gradient(circle at 50% 50%, #ffffff 0 10%, #fff8 10% 26%, #fff3 26% 42%, transparent 60%);
-            filter: blur(18px); opacity:.35; pointer-events:none;
-        }
-        .stage::after{
-            content:""; position:absolute; left:-5vw; right:-5vw; bottom:-6vh; height:22vh;
-            background: radial-gradient(120% 150% at 50% 115%, rgba(0,0,0,.35) 0%, rgba(0,0,0,.18) 38%, rgba(0,0,0,0) 72%);
-            pointer-events:none; z-index:3;
+            filter: blur(18px);
+            opacity: .35;
+            pointer-events: none;
         }
 
-        #clouds .cloudImg{
-            height: var(--cloud-h); width:auto;
+        .stage::after {
+            content: "";
+            position: absolute;
+            left: -5vw;
+            right: -5vw;
+            bottom: -6vh;
+            height: 22vh;
+            background: radial-gradient(120% 150% at 50% 115%, rgba(0, 0, 0, .35) 0%, rgba(0, 0, 0, .18) 38%, rgba(0, 0, 0, 0) 72%);
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        #clouds .cloudImg {
+            height: var(--cloud-h);
+            width: auto;
             margin: 0 64px var(--cloud-rise);
-            flex: 0 0 auto; opacity:.95;
-            filter: drop-shadow(0 6px 14px rgba(0,0,0,.10));
-            transform-origin: bottom center; will-change: transform;
+            flex: 0 0 auto;
+            opacity: .95;
+            filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .10));
+            transform-origin: bottom center;
+            will-change: transform;
         }
-        #clouds .cloudImg.sm { height: calc(var(--cloud-h) - 6%); opacity:.92; }
-        #clouds .cloudImg.lg { height: calc(var(--cloud-h) + 6%); }
-        #clouds .flip       { transform: scaleX(-1); }
 
-        #trees .treeImg{
-            height:60%; width:auto; margin:0 48px; flex:0 0 auto;
-            filter: drop-shadow(0 14px 28px rgba(0,0,0,.30));
+        #clouds .cloudImg.sm {
+            height: calc(var(--cloud-h) - 6%);
+            opacity: .92;
+        }
+
+        #clouds .cloudImg.lg {
+            height: calc(var(--cloud-h) + 6%);
+        }
+
+        #clouds .flip {
+            transform: scaleX(-1);
+        }
+
+        #trees .treeImg {
+            height: 60%;
+            width: auto;
+            margin: 0 48px;
+            flex: 0 0 auto;
+            filter: drop-shadow(0 14px 28px rgba(0, 0, 0, .30));
             transform-origin: bottom center;
         }
-        #trees .treeImg.xs { height:25%; }
-        #trees .treeImg.sm { height:48%; }
-        #trees .treeImg.lg { height:72%; }
-        #trees .flip       { transform: scaleX(-1); }
 
-        .charImg{
-            width:240px; height:auto; margin:0 120px 0;
-            transform: translateY(var(--char-drop));
-            filter: drop-shadow(0 12px 34px rgba(0,0,0,.35));
-            flex:0 0 auto;
+        #trees .treeImg.xs {
+            height: 25%;
         }
-        .charImg.sm{ width:200px; }
-        .charImg.lg{ width:280px; }
 
-        .postbox-btn{ cursor:pointer; pointer-events:auto; }
+        #trees .treeImg.sm {
+            height: 48%;
+        }
+
+        #trees .treeImg.lg {
+            height: 72%;
+        }
+
+        #trees .flip {
+            transform: scaleX(-1);
+        }
+
+        .charImg {
+            width: 240px;
+            height: auto;
+            margin: 0 120px 0;
+            transform: translateY(var(--char-drop));
+            filter: drop-shadow(0 12px 34px rgba(0, 0, 0, .35));
+            flex: 0 0 auto;
+        }
+
+        .charImg.sm {
+            width: 200px;
+        }
+
+        .charImg.lg {
+            width: 280px;
+        }
+
+        .postbox-btn {
+            cursor: pointer;
+            pointer-events: auto;
+        }
 
         /* ======= COMIC POPUP (твій, без змін у розмітці) ======= */
-        .pc-backdrop[hidden], .pc-root[hidden]{ display:none !important; }
-        .pc-backdrop{
-            position:fixed; inset:0; z-index:9998;
-            background: rgba(0,0,0,.18);
+        .pc-backdrop[hidden], .pc-root[hidden] {
+            display: none !important;
+        }
+
+        .pc-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            background: rgba(0, 0, 0, .18);
             -webkit-tap-highlight-color: transparent;
         }
-        .pc-root{
-            position:fixed; top:50%; left:50%;
-            transform: translate(-50%,-50%) scale(.92) rotate(-0.6deg);
-            z-index:9999;
-            width:min(540px, 92vw);
-            max-height:82vh; overflow:auto;
-            border:5px solid #111; border-radius:24px;
-            box-shadow:12px 12px 0 #111;
-            background:
-                    radial-gradient(circle at 2px 2px, rgba(255,38,74,.35) 1.6px, transparent 1.7px) 0 0/8px 8px,
-                    radial-gradient(circle at 4px 4px, rgba(18,82,255,.28) 1.4px, transparent 1.5px) 0 0/8px 8px,
-                    #ffe977;
-            color:#111; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
-            padding:22px 18px 20px;
-            opacity:0; pointer-events:none;
-            transition: transform .28s cubic-bezier(.2,.8,.2,1), opacity .22s ease;
+
+        .pc-root {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(.92) rotate(-0.6deg);
+            z-index: 9999;
+            width: min(540px, 92vw);
+            max-height: 82vh;
+            overflow: auto;
+            border: 5px solid #111;
+            border-radius: 24px;
+            box-shadow: 12px 12px 0 #111;
+            background: radial-gradient(circle at 2px 2px, rgba(255, 38, 74, .35) 1.6px, transparent 1.7px) 0 0/8px 8px,
+            radial-gradient(circle at 4px 4px, rgba(18, 82, 255, .28) 1.4px, transparent 1.5px) 0 0/8px 8px,
+            #ffe977;
+            color: #111;
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+            padding: 22px 18px 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: transform .28s cubic-bezier(.2, .8, .2, 1), opacity .22s ease;
         }
-        .pc-root.pc--visible{ opacity:1; pointer-events:auto; transform: translate(-50%,-50%) scale(1) rotate(-0.6deg); }
-        @media (min-width:1024px){ .pc-root{ width:min(50vw, 720px); } }
-        .pc-root::before{
-            content:""; position:absolute; inset:8px; border-radius:18px; z-index:0; pointer-events:none;
+
+        .pc-root.pc--visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1) rotate(-0.6deg);
+        }
+
+        @media (min-width: 1024px) {
+            .pc-root {
+                width: min(50vw, 720px);
+            }
+        }
+
+        .pc-root::before {
+            content: "";
+            position: absolute;
+            inset: 8px;
+            border-radius: 18px;
+            z-index: 0;
+            pointer-events: none;
             background: repeating-linear-gradient(135deg,
             #ff1744 0 12px, #fff 12px 18px, #1e3aff 18px 28px, #fff 28px 34px, #ffd400 34px 44px, #fff 44px 50px);
-            mix-blend-mode:multiply; opacity:.18;
+            mix-blend-mode: multiply;
+            opacity: .18;
         }
-        .pc-header{ display:flex; align-items:flex-start; gap:10px; position:relative; z-index:1; }
-        .pc-title{
-            margin:0; font-family:"Bangers",cursive; letter-spacing:.6px;
-            font-size:40px; line-height:1; color:#111;
-            text-shadow:2px 2px 0 #fff, 5px 5px 0 #111;
-        }
-        .pc-burst{
-            margin-left:auto; transform:rotate(7deg);
-            background:#ffd400; color:#111;
-            border:4px solid #111; border-radius:999px;
-            font-family:"Bangers",cursive; font-size:18px; padding:6px 10px;
-            box-shadow:6px 6px 0 #111;
-        }
-        .pc-close{
-            margin-left:10px; width:42px; height:42px; flex:0 0 42px;
-            display:grid; place-items:center; cursor:pointer;
-            border:4px solid #111; border-radius:50%; background:#fff;
-            box-shadow:5px 5px 0 #111; font-weight:800; font-family:"Bangers",cursive; font-size:20px;
-        }
-        .pc-sub{ margin:8px 2px 12px; font-weight:600; color:#222; z-index:1; position:relative; }
-        .pc-form{ display:grid; grid-template-columns:1fr 1fr; gap:12px; z-index:1; position:relative; }
-        .pc-full{ grid-column:1 / -1; }
-        .pc-field{ display:grid; gap:6px; }
-        .pc-label{ font-weight:800; text-transform:uppercase; letter-spacing:.5px; font-size:12px; display:flex; gap:6px; align-items:center;}
-        .pc-tag{ border:3px solid #111; background:#fff; padding:0 8px; border-radius:999px; box-shadow:3px 3px 0 #111; font-weight:800; font-size:11px;}
-        .pc-input, .pc-textarea{
-            border:3px solid #111; border-radius:14px; background:#fff;
-            padding:12px 14px; font-size:15px; outline:none; color:#111;
-            box-shadow:4px 4px 0 #111;
-        }
-        .pc-textarea{ min-height:120px; resize:vertical; }
-        .pc-row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-        .pc-check{
-            display:flex; align-items:center; gap:8px; font-size:13px;
-            border:3px solid #111; border-radius:12px; padding:8px 10px; background:#fff; box-shadow:4px 4px 0 #111;
-        }
-        .pc-actions{ margin-top:6px; display:flex; gap:12px; align-items:center; }
-        .pc-btn{
-            border:3px solid #111; border-radius:14px; padding:12px 16px; cursor:pointer;
-            box-shadow:4px 4px 0 #111; font-weight:800; text-transform:uppercase; letter-spacing:.5px;
-        }
-        .pc-btn.pc-primary{ background:#ff1744; color:#fff; }
-        .pc-btn.pc-secondary{ background:#fff; color:#111; box-shadow:4px 4px 0 #111, 0 0 0 3px inset; }
-        @media (max-width:640px){ .pc-form{ grid-template-columns:1fr; } .pc-title{ font-size:34px; } }
 
-        @media (prefers-reduced-motion: no-preference){
-            .pc-root{ transform-origin:center; will-change:transform; }
-            .pc-root.pc--shaking{ animation: pc-shake 520ms cubic-bezier(.18,.88,.26,1.12) 1; }
-            @keyframes pc-shake{
-                0%   { transform: translate(-50%,-50%) scale(1) rotate(-0.6deg); }
-                15%  { transform: translate(calc(-50% + 2px), calc(-50% + 1px)) rotate(-1.2deg) scale(1.01); }
-                30%  { transform: translate(calc(-50% - 2px), calc(-50% - 1px)) rotate(0.2deg)  scale(.995); }
-                45%  { transform: translate(calc(-50% + 1px), calc(-50% - 2px)) rotate(-0.9deg) scale(1.008); }
-                60%  { transform: translate(calc(-50% - 1px), calc(-50% + 2px)) rotate(-0.2deg) scale(.998); }
-                75%  { transform: translate(calc(-50% + .5px), calc(-50% + .5px)) rotate(-0.7deg) scale(1.004); }
-                100% { transform: translate(-50%,-50%) scale(1) rotate(-0.6deg); }
+        .pc-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pc-title {
+            margin: 0;
+            font-family: "Bangers", cursive;
+            letter-spacing: .6px;
+            font-size: 40px;
+            line-height: 1;
+            color: #111;
+            text-shadow: 2px 2px 0 #fff, 5px 5px 0 #111;
+        }
+
+        .pc-burst {
+            margin-left: auto;
+            transform: rotate(7deg);
+            background: #ffd400;
+            color: #111;
+            border: 4px solid #111;
+            border-radius: 999px;
+            font-family: "Bangers", cursive;
+            font-size: 18px;
+            padding: 6px 10px;
+            box-shadow: 6px 6px 0 #111;
+        }
+
+        .pc-close {
+            margin-left: 10px;
+            width: 42px;
+            height: 42px;
+            flex: 0 0 42px;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            border: 4px solid #111;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 5px 5px 0 #111;
+            font-weight: 800;
+            font-family: "Bangers", cursive;
+            font-size: 20px;
+        }
+
+        .pc-sub {
+            margin: 8px 2px 12px;
+            font-weight: 600;
+            color: #222;
+            z-index: 1;
+            position: relative;
+        }
+
+        .pc-form {
+            display: grid;
+            grid-template-columns:1fr 1fr;
+            gap: 12px;
+            z-index: 1;
+            position: relative;
+        }
+
+        .pc-full {
+            grid-column: 1 / -1;
+        }
+
+        .pc-field {
+            display: grid;
+            gap: 6px;
+        }
+
+        .pc-label {
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            font-size: 12px;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .pc-tag {
+            border: 3px solid #111;
+            background: #fff;
+            padding: 0 8px;
+            border-radius: 999px;
+            box-shadow: 3px 3px 0 #111;
+            font-weight: 800;
+            font-size: 11px;
+        }
+
+        .pc-input, .pc-textarea {
+            border: 3px solid #111;
+            border-radius: 14px;
+            background: #fff;
+            padding: 12px 14px;
+            font-size: 15px;
+            outline: none;
+            color: #111;
+            box-shadow: 4px 4px 0 #111;
+        }
+
+        .pc-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .pc-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .pc-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            border: 3px solid #111;
+            border-radius: 12px;
+            padding: 8px 10px;
+            background: #fff;
+            box-shadow: 4px 4px 0 #111;
+        }
+
+        .pc-actions {
+            margin-top: 6px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .pc-btn {
+            border: 3px solid #111;
+            border-radius: 14px;
+            padding: 12px 16px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 #111;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .pc-btn.pc-primary {
+            background: #ff1744;
+            color: #fff;
+        }
+
+        .pc-btn.pc-secondary {
+            background: #fff;
+            color: #111;
+            box-shadow: 4px 4px 0 #111, 0 0 0 3px inset;
+        }
+
+        @media (max-width: 640px) {
+            .pc-form {
+                grid-template-columns:1fr;
+            }
+
+            .pc-title {
+                font-size: 34px;
+            }
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .pc-root {
+                transform-origin: center;
+                will-change: transform;
+            }
+
+            .pc-root.pc--shaking {
+                animation: pc-shake 520ms cubic-bezier(.18, .88, .26, 1.12) 1;
+            }
+
+            @keyframes pc-shake {
+                0% {
+                    transform: translate(-50%, -50%) scale(1) rotate(-0.6deg);
+                }
+                15% {
+                    transform: translate(calc(-50% + 2px), calc(-50% + 1px)) rotate(-1.2deg) scale(1.01);
+                }
+                30% {
+                    transform: translate(calc(-50% - 2px), calc(-50% - 1px)) rotate(0.2deg) scale(.995);
+                }
+                45% {
+                    transform: translate(calc(-50% + 1px), calc(-50% - 2px)) rotate(-0.9deg) scale(1.008);
+                }
+                60% {
+                    transform: translate(calc(-50% - 1px), calc(-50% + 2px)) rotate(-0.2deg) scale(.998);
+                }
+                75% {
+                    transform: translate(calc(-50% + .5px), calc(-50% + .5px)) rotate(-0.7deg) scale(1.004);
+                }
+                100% {
+                    transform: translate(-50%, -50%) scale(1) rotate(-0.6deg);
+                }
             }
         }
 
         /* ======= PHONE SECTION (100vh) ======= */
-        .phone-section{
-            height:100vh;                 /* фіксована висота */
-            display:grid; place-items:center;
-            position:relative; overflow:hidden;
+        .phone-section {
+            height: 100vh; /* фіксована висота */
+            display: grid;
+            place-items: center;
+            position: relative;
+            overflow: hidden;
             background: radial-gradient(1100px 520px at 60% 10%, #2a115a 0%, #0b1020 62%);
         }
-        .phone-wrap{
-            position:relative;
-            width:min(250px, 80vw);       /* трохи менший телефон */
+
+        .phone-wrap {
+            position: relative;
+            width: min(250px, 80vw); /* трохи менший телефон */
         }
 
         /* рука під телефоном */
-        .hand{
-            position:absolute; left:50%; bottom:-35%;
+        .hand {
+            position: absolute;
+            left: 50%;
+            bottom: -35%;
             transform: translateX(-50%) scale(0.92);
-            width:150%;
-            filter: drop-shadow(0 10px 16px rgba(0,0,0,.35));
-            z-index:1; pointer-events:none;
+            width: 150%;
+            filter: drop-shadow(0 10px 16px rgba(0, 0, 0, .35));
+            z-index: 1;
+            pointer-events: none;
         }
 
         /* каркас телефону (під екраном за z-index) */
-        .phone-frame{
-            position:relative; z-index:1;
-            width:100%; height:auto; display:block;
-            filter: drop-shadow(0 18px 38px rgba(0,0,0,.35));
-            pointer-events:none;
+        .phone-frame {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: drop-shadow(0 18px 38px rgba(0, 0, 0, .35));
+            pointer-events: none;
         }
 
         /* екран зверху, щоб його не перекривав svg-фрейм */
-        .phone-screen{
+        .phone-screen {
             --screen-top: 9%;
             --screen-left: 7.5%;
             --screen-w: 85%;
             --screen-h: 82%;
 
-            position:absolute;
-            top:var(--screen-top);
-            left:var(--screen-left);
-            width:var(--screen-w);
-            height:var(--screen-h);
-            overflow:hidden;
-            border-radius:24px;
-            z-index:2;
+            position: absolute;
+            top: var(--screen-top);
+            left: var(--screen-left);
+            width: var(--screen-w);
+            height: var(--screen-h);
+            overflow: hidden;
+            border-radius: 24px;
+            z-index: 2;
             /* на випадок, якщо зображення не знайдуться, бачиш фон */
-            background:#0b0b0b;
+            background: #0b0b0b;
         }
 
         .phone-screen .swiper,
         .phone-screen .swiper-wrapper,
-        .phone-screen .swiper-slide{ width:100%; height:100%; }
-
-        .phone-screen img{
-            width:100%; height:100%; object-fit:cover; display:block;
+        .phone-screen .swiper-slide {
+            width: 100%;
+            height: 100%;
         }
+
+        .phone-screen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
         /* ======= BILLBOARD ======= */
         /* ======= BILLBOARD (з твоєю bigboard.svg) ======= */
-        .billboard-section{
-            position:relative;
-            background:
-                    radial-gradient(1200px 680px at 60% -10%, #2cff88 0%, #19d173 32%, #0fa35b 58%, #0a6f43 78%, #073726 100%);
+        .billboard-section {
+            position: relative;
+            background: yellow;
             place-items: normal;
             align-content: flex-end;
             /*min-height: 60vh;*/
-          /*  height: auto;*/
+            /*  height: auto;*/
         }
 
-        /* напівпрозорий комікс-гальфтон */
-        .billboard-section::before{
-            content:"";
-            position:absolute; inset:0; pointer-events:none;
-            background:
-                    radial-gradient(circle at 12px 12px, #ffffff25 2.2px, transparent 2.4px) 0 0/16px 16px,
-                    radial-gradient(circle at 6px 6px,   #00000018 1.2px, transparent 1.4px) 0 0/12px 12px;
-            mix-blend-mode:overlay;
-            opacity:.28;
-        }
 
         /* сам білборд як картинка-рамка */
-        .billboard{
-            width:min(980px, 92vw);
-            margin:0 auto;
-            position:relative;
+        .billboard {
+            width: min(980px, 92vw);
+            margin: 0 auto;
+            position: relative;
             /* bigboard.svg — твоя рамка */
             background: url("./assets/bigboard.svg") center/contain no-repeat;
-            aspect-ratio: 16/9;    /* загальний розмір рамки */
-            filter: drop-shadow(0 18px 60px rgba(0,0,0,.45));
+            aspect-ratio: 16/9; /* загальний розмір рамки */
+            filter: drop-shadow(0 18px 60px rgba(0, 0, 0, .45));
         }
 
         /* ВНУТРІШНІЙ “ЕКРАН” у рамці.
            Підіграй ці 4 значення під прозоре «вікно» в bigboard.svg */
-        .billboard-screen{
-            position:absolute;
+        .billboard-screen {
+            position: absolute;
             /* координати та розмір екрану усередині рамки: */
-            left: 9.5%;
-            top: 13%;
-            width: 81%;
-            height: 74%;
-            border-radius:14px;
-            overflow:hidden;
-            background:#000;
-            box-shadow: 0 8px 24px rgba(0,0,0,.35) inset;
+            left: 12.5%;
+            top: 15%;
+            width: 75%;
+            height: 70%;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #000;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .35) inset;
         }
 
-        .billboard-screen iframe{
-            width:100%; height:100%; border:0; display:block;
+        .billboard-screen iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
         }
 
-        .billboard-caption{
-            margin:14px 4px 0; color:#cfd6ff; font-weight:600;
-            letter-spacing:.2px; opacity:.9; text-align:center;
+        .billboard-caption {
+            margin: 14px 4px 0;
+            color: #cfd6ff;
+            font-weight: 600;
+            letter-spacing: .2px;
+            opacity: .9;
+            text-align: center;
         }
 
 
@@ -324,61 +598,63 @@
 
 <div class="stage" id="stage">
     <!-- Небо -->
-    <div class="layer" id="sky"><div class="band" id="skyBand"></div></div>
+    <div class="layer" id="sky">
+        <div class="band" id="skyBand"></div>
+    </div>
 
     <!-- Хмари -->
     <div class="layer" id="clouds">
         <div class="band" id="cloudsBand">
-            <img class="cloudImg sm"      src="./assets/clouds.svg" alt="Cloud" style="margin-left:8vw">
-            <img class="cloudImg"         src="./assets/clouds.svg" alt="Cloud">
+            <img class="cloudImg sm" src="./assets/clouds.svg" alt="Cloud" style="margin-left:8vw">
+            <img class="cloudImg" src="./assets/clouds.svg" alt="Cloud">
             <img class="cloudImg lg flip" src="./assets/clouds.svg" alt="Cloud">
-            <img class="cloudImg"         src="./assets/clouds.svg" alt="Cloud">
-            <img class="cloudImg sm"      src="./assets/clouds.svg" alt="Cloud">
-            <img class="cloudImg lg"      src="./assets/clouds.svg" alt="Cloud">
-            <img class="cloudImg flip"    src="./assets/clouds.svg" alt="Cloud">
-            <img class="cloudImg"         src="./assets/clouds.svg" alt="Cloud" style="margin-right:10vw">
+            <img class="cloudImg" src="./assets/clouds.svg" alt="Cloud">
+            <img class="cloudImg sm" src="./assets/clouds.svg" alt="Cloud">
+            <img class="cloudImg lg" src="./assets/clouds.svg" alt="Cloud">
+            <img class="cloudImg flip" src="./assets/clouds.svg" alt="Cloud">
+            <img class="cloudImg" src="./assets/clouds.svg" alt="Cloud" style="margin-right:10vw">
         </div>
     </div>
 
     <!-- Дерева -->
     <div class="layer" id="trees">
         <div class="band" id="treesBand">
-            <img class="treeImg sm"         src="./assets/tree.svg"     alt="Tree" style="margin-left:6vw">
-            <img class="treeImg"            src="./assets/tree.svg"     alt="Tree">
+            <img class="treeImg sm" src="./assets/tree.svg" alt="Tree" style="margin-left:6vw">
+            <img class="treeImg" src="./assets/tree.svg" alt="Tree">
             <img id="postbox" class="treeImg xs postbox-btn" src="./assets/postbox.svg" alt="Postbox">
-            <img class="treeImg flip"       src="./assets/tree.svg"     alt="Tree">
-            <img class="treeImg"            src="./assets/tree.svg"     alt="Tree">
-            <img class="treeImg sm"         src="./assets/tree.svg"     alt="Tree">
-            <img class="treeImg"            src="./assets/tree.svg"     alt="Tree">
-            <img class="treeImg lg"         src="./assets/tree.svg"     alt="Tree">
-            <img class="treeImg flip sm"    src="./assets/tree.svg"     alt="Tree">
-            <img class="treeImg"            src="./assets/tree.svg"     alt="Tree">
-            <img class="treeImg"            src="./assets/tree.svg"     alt="Tree">
-            <img class="treeImg lg"         src="./assets/tree.svg"     alt="Tree">
-            <img class="treeImg sm"         src="./assets/tree.svg"     alt="Tree">
-            <img class="treeImg"            src="./assets/tree.svg"     alt="Tree">
-            <img class="treeImg lg"         src="./assets/tree.svg"     alt="Tree" style="margin-right:8vw">
+            <img class="treeImg flip" src="./assets/tree.svg" alt="Tree">
+            <img class="treeImg" src="./assets/tree.svg" alt="Tree">
+            <img class="treeImg sm" src="./assets/tree.svg" alt="Tree">
+            <img class="treeImg" src="./assets/tree.svg" alt="Tree">
+            <img class="treeImg lg" src="./assets/tree.svg" alt="Tree">
+            <img class="treeImg flip sm" src="./assets/tree.svg" alt="Tree">
+            <img class="treeImg" src="./assets/tree.svg" alt="Tree">
+            <img class="treeImg" src="./assets/tree.svg" alt="Tree">
+            <img class="treeImg lg" src="./assets/tree.svg" alt="Tree">
+            <img class="treeImg sm" src="./assets/tree.svg" alt="Tree">
+            <img class="treeImg" src="./assets/tree.svg" alt="Tree">
+            <img class="treeImg lg" src="./assets/tree.svg" alt="Tree" style="margin-right:8vw">
         </div>
     </div>
 
     <!-- Персонажі -->
     <div class="layer" id="chars">
         <div class="band" id="charsBand">
-            <img class="charImg sm" src="./assets/Gorilla.svg"    alt="Hero Gorilla" style="margin-left:6vw">
-            <img class="charImg"    src="./assets/character2.svg" alt="Hero 2">
-            <img class="charImg lg" src="./assets/Gorilla.svg"    alt="Hero Gorilla">
-            <img class="charImg"    src="./assets/character2.svg" alt="Hero 2">
-            <img class="charImg"    src="./assets/Gorilla.svg"    alt="Hero Gorilla">
+            <img class="charImg sm" src="./assets/Gorilla.svg" alt="Hero Gorilla" style="margin-left:6vw">
+            <img class="charImg" src="./assets/character2.svg" alt="Hero 2">
+            <img class="charImg lg" src="./assets/Gorilla.svg" alt="Hero Gorilla">
+            <img class="charImg" src="./assets/character2.svg" alt="Hero 2">
+            <img class="charImg" src="./assets/Gorilla.svg" alt="Hero Gorilla">
             <img class="charImg sm" src="./assets/character2.svg" alt="Hero 2">
-            <img class="charImg"    src="./assets/Gorilla.svg"    alt="Hero Gorilla">
+            <img class="charImg" src="./assets/Gorilla.svg" alt="Hero Gorilla">
             <img class="charImg lg" src="./assets/character2.svg" alt="Hero 2">
-            <img class="charImg sm" src="./assets/Gorilla.svg"    alt="Hero Gorilla">
-            <img class="charImg"    src="./assets/character2.svg" alt="Hero 2">
-            <img class="charImg"    src="./assets/Gorilla.svg"    alt="Hero Gorilla">
+            <img class="charImg sm" src="./assets/Gorilla.svg" alt="Hero Gorilla">
+            <img class="charImg" src="./assets/character2.svg" alt="Hero 2">
+            <img class="charImg" src="./assets/Gorilla.svg" alt="Hero Gorilla">
             <img class="charImg lg" src="./assets/character2.svg" alt="Hero 2">
-            <img class="charImg sm" src="./assets/Gorilla.svg"    alt="Hero Gorilla">
-            <img class="charImg"    src="./assets/character2.svg" alt="Hero 2">
-            <img class="charImg lg" src="./assets/Gorilla.svg"    alt="Hero Gorilla" style="margin-right:8vw">
+            <img class="charImg sm" src="./assets/Gorilla.svg" alt="Hero Gorilla">
+            <img class="charImg" src="./assets/character2.svg" alt="Hero 2">
+            <img class="charImg lg" src="./assets/Gorilla.svg" alt="Hero Gorilla" style="margin-right:8vw">
         </div>
     </div>
 </div>
@@ -396,7 +672,7 @@
         <div class="phone-screen">
             <div class="swiper phone-swiper">
                 <div class="swiper-wrapper">
-                    <div class="swiper-slide"><img src="./assets/inner_screen.png"  alt="Screen 1"></div>
+                    <div class="swiper-slide"><img src="./assets/inner_screen.png" alt="Screen 1"></div>
                     <div class="swiper-slide"><img src="./assets/inner_screen2.png" alt="Screen 2"></div>
                     <!-- <div class="swiper-slide"><img src="./assets/inner_screen3.png" alt="Screen 3"></div> -->
                 </div>
@@ -424,7 +700,8 @@
 
 <!-- ===== POPUP (твій, без змін) ===== -->
 <div id="pc-backdrop" class="pc-backdrop" hidden></div>
-<div id="pc-popup" class="pc-root" role="dialog" aria-modal="true" aria-labelledby="pc-title" aria-describedby="pc-sub" hidden>
+<div id="pc-popup" class="pc-root" role="dialog" aria-modal="true" aria-labelledby="pc-title" aria-describedby="pc-sub"
+     hidden>
     <div class="pc-header">
         <h2 id="pc-title" class="pc-title">Напиши мені</h2>
         <span class="pc-burst">WOW!</span>
@@ -436,11 +713,13 @@
     <form class="pc-form" action="#" method="post" novalidate>
         <div class="pc-field">
             <label class="pc-label" for="pc-name"><span class="pc-tag">NAME</span> Ім’я</label>
-            <input class="pc-input" id="pc-name" name="name" type="text" placeholder="Твоє ім’я" autocomplete="name" required>
+            <input class="pc-input" id="pc-name" name="name" type="text" placeholder="Твоє ім’я" autocomplete="name"
+                   required>
         </div>
         <div class="pc-field">
             <label class="pc-label" for="pc-email"><span class="pc-tag">MAIL</span> Email</label>
-            <input class="pc-input" id="pc-email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required>
+            <input class="pc-input" id="pc-email" name="email" type="email" placeholder="you@example.com"
+                   autocomplete="email" required>
         </div>
         <div class="pc-field pc-full">
             <label class="pc-label" for="pc-msg"><span class="pc-tag">MSG</span> Повідомлення</label>
@@ -477,10 +756,10 @@
         }
     });
 
-    tl.to("#skyBand",    { x: "-40vw",  ease: "none" }, 0)
-        .to("#cloudsBand", { x: "-90vw",  ease: "none" }, 0)
-        .to("#treesBand",  { x: "-160vw", ease: "none" }, 0)
-        .to("#charsBand",  { x: "-240vw", ease: "none" }, 0);
+    tl.to("#skyBand", {x: "-40vw", ease: "none"}, 0)
+        .to("#cloudsBand", {x: "-90vw", ease: "none"}, 0)
+        .to("#treesBand", {x: "-160vw", ease: "none"}, 0)
+        .to("#charsBand", {x: "-240vw", ease: "none"}, 0);
 
     /* Легке «плавання» хмар */
     gsap.utils.toArray("#clouds .cloudImg").forEach((el, i) => {
@@ -514,9 +793,9 @@
 
 <!-- ===== POPUP logic + конфеті ===== -->
 <script>
-    (function(){
-        const trigger  = document.getElementById('postbox'); // поштовий ящик
-        const popup    = document.getElementById('pc-popup');
+    (function () {
+        const trigger = document.getElementById('postbox'); // поштовий ящик
+        const popup = document.getElementById('pc-popup');
         const backdrop = document.getElementById('pc-backdrop');
         const closeBtn = document.getElementById('pc-close');
         let lastFocus;
@@ -525,19 +804,19 @@
             lastFocus = document.activeElement;
             backdrop.hidden = false;
             popup.hidden = false;
-            requestAnimationFrame(()=> {
+            requestAnimationFrame(() => {
                 popup.classList.add('pc--visible');
                 popup.classList.add('pc--shaking');
-                setTimeout(()=> popup.classList.remove('pc--shaking'), 550);
+                setTimeout(() => popup.classList.remove('pc--shaking'), 550);
             });
             document.body.style.overflow = 'hidden';
-            setTimeout(()=> document.getElementById('pc-name')?.focus(), 60);
+            setTimeout(() => document.getElementById('pc-name')?.focus(), 60);
             pcConfetti();
         };
         const close = () => {
             popup.classList.remove('pc--visible');
             document.body.style.overflow = '';
-            setTimeout(()=>{
+            setTimeout(() => {
                 popup.hidden = true;
                 backdrop.hidden = true;
                 lastFocus && lastFocus.focus?.();
@@ -547,78 +826,97 @@
         trigger?.addEventListener('click', open);
         backdrop?.addEventListener('click', close);
         closeBtn?.addEventListener('click', close);
-        document.addEventListener('keydown', e => { if (e.key === 'Escape' && !popup.hidden) close(); });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && !popup.hidden) close();
+        });
     })();
 
-    function pcConfetti(durationMs = 800, count = 180){
+    function pcConfetti(durationMs = 800, count = 180) {
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
         const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
         const canvas = document.createElement('canvas');
         canvas.className = 'pc-confetti';
-        Object.assign(canvas.style, { position:'fixed', inset:'0', zIndex:'10000', pointerEvents:'none' });
+        Object.assign(canvas.style, {position: 'fixed', inset: '0', zIndex: '10000', pointerEvents: 'none'});
         document.body.appendChild(canvas);
 
         const ctx = canvas.getContext('2d');
         const resize = () => {
-            canvas.width  = Math.floor(innerWidth  * dpr);
+            canvas.width = Math.floor(innerWidth * dpr);
             canvas.height = Math.floor(innerHeight * dpr);
-            ctx.setTransform(dpr,0,0,dpr,0,0);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         };
-        resize(); addEventListener('resize', resize, {passive:true});
+        resize();
+        addEventListener('resize', resize, {passive: true});
 
-        const colors = ['#ff1744','#ffd400','#1e3aff','#00e5ff','#111'];
-        const shapes = ['rect','circle','tri'];
-        const rand = (a,b)=>a + Math.random()*(b-a);
-        const pick = arr => arr[(Math.random()*arr.length)|0];
+        const colors = ['#ff1744', '#ffd400', '#1e3aff', '#00e5ff', '#111'];
+        const shapes = ['rect', 'circle', 'tri'];
+        const rand = (a, b) => a + Math.random() * (b - a);
+        const pick = arr => arr[(Math.random() * arr.length) | 0];
 
-        const cx = innerWidth/2, cy = innerHeight/2;
+        const cx = innerWidth / 2, cy = innerHeight / 2;
         const parts = Array.from({length: count}, () => {
-            const angle = rand(0, Math.PI*2);
+            const angle = rand(0, Math.PI * 2);
             const speed = rand(2.2, 6.2);
             return {
-                x: cx + Math.cos(angle)*rand(0,40),
-                y: cy + Math.sin(angle)*rand(0,20),
-                vx: Math.cos(angle)*speed + rand(-0.6,0.6),
-                vy: Math.sin(angle)*speed - rand(2.0,4.0),
-                g: rand(0.06,0.18),
-                w: rand(6,12), h: rand(8,16),
-                r: rand(0,Math.PI*2), vr: rand(-0.2,0.2),
+                x: cx + Math.cos(angle) * rand(0, 40),
+                y: cy + Math.sin(angle) * rand(0, 20),
+                vx: Math.cos(angle) * speed + rand(-0.6, 0.6),
+                vy: Math.sin(angle) * speed - rand(2.0, 4.0),
+                g: rand(0.06, 0.18),
+                w: rand(6, 12), h: rand(8, 16),
+                r: rand(0, Math.PI * 2), vr: rand(-0.2, 0.2),
                 color: pick(colors), shape: pick(shapes),
-                life: rand(0.8,1)
+                life: rand(0.8, 1)
             };
         });
 
         const start = performance.now();
-        (function frame(now){
+        (function frame(now) {
             const t = now - start;
-            ctx.clearRect(0,0,innerWidth,innerHeight);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
 
-            for (const p of parts){
-                p.vy += p.g; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+            for (const p of parts) {
+                p.vy += p.g;
+                p.x += p.vx;
+                p.y += p.vy;
+                p.r += p.vr;
 
                 ctx.save();
                 ctx.translate(p.x, p.y);
                 ctx.rotate(p.r);
 
-                const fade = 1 - Math.min(1, t/durationMs) * (1 - p.life);
+                const fade = 1 - Math.min(1, t / durationMs) * (1 - p.life);
                 ctx.globalAlpha = Math.max(0, fade);
                 ctx.fillStyle = p.color;
 
-                switch(p.shape){
-                    case 'rect':   ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h); break;
-                    case 'circle': ctx.beginPath(); ctx.arc(0,0, Math.min(p.w,p.h)/2, 0, Math.PI*2); ctx.fill(); break;
+                switch (p.shape) {
+                    case 'rect':
+                        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                        break;
+                    case 'circle':
+                        ctx.beginPath();
+                        ctx.arc(0, 0, Math.min(p.w, p.h) / 2, 0, Math.PI * 2);
+                        ctx.fill();
+                        break;
                     case 'tri':
                         ctx.beginPath();
-                        ctx.moveTo(0, -p.h/2); ctx.lineTo(-p.w/2, p.h/2); ctx.lineTo(p.w/2, p.h/2);
-                        ctx.closePath(); ctx.fill();
+                        ctx.moveTo(0, -p.h / 2);
+                        ctx.lineTo(-p.w / 2, p.h / 2);
+                        ctx.lineTo(p.w / 2, p.h / 2);
+                        ctx.closePath();
+                        ctx.fill();
                         break;
                 }
                 ctx.restore();
             }
 
-            if (t < durationMs){ requestAnimationFrame(frame); }
-            else { removeEventListener('resize', resize); canvas.remove(); }
+            if (t < durationMs) {
+                requestAnimationFrame(frame);
+            } else {
+                removeEventListener('resize', resize);
+                canvas.remove();
+            }
         })(start);
     }
 </script>
@@ -631,7 +929,7 @@
         loop: true,
         effect: 'fade',
         speed: 700,
-        autoplay: { delay: 1800, disableOnInteraction: false },
+        autoplay: {delay: 1800, disableOnInteraction: false},
         allowTouchMove: false
     });
 </script>
