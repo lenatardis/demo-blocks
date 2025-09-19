@@ -383,7 +383,7 @@
     })();
 
     // Конфеті (pop-art палітра)
-    function pcConfetti(durationMs = 1800, count = 180){
+    function pcConfetti(durationMs = 800, count = 180){
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
         const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
