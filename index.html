@@ -558,6 +558,8 @@
             filter: drop-shadow(0 18px 60px rgba(0, 0, 0, .45));
         }
 
+        .billboard{ will-change: transform; }
+
         /* ВНУТРІШНІЙ “ЕКРАН” у рамці.
            Підіграй ці 4 значення під прозоре «вікно» в bigboard.svg */
         .billboard-screen {
@@ -790,6 +792,46 @@
         });
 
 </script>
+<script>
+    // Супер-трус бігборда
+    const bigShake = () => {
+        const target = '.billboard';
+
+        // старт: трохи «надули» білборд
+        gsap.set(target, { transformOrigin: '50% 100%', scale: 1.03 });
+
+        // серія дуже швидких рандомних ривків
+        gsap.to(target, {
+            duration: 0.055,                // швидкість «тряски»
+            x: () => gsap.utils.random(-22, 22),
+            y: () => gsap.utils.random(-18, 18),
+            rotation: () => gsap.utils.random(-5, 5),
+            skewX: () => gsap.utils.random(-1.8, 1.8),
+            ease: 'power1.inOut',
+            repeat: 14,                      // кількість ривків (більше — сильніше/довше)
+            yoyo: true,
+            onComplete: () => {
+                // плавне затухання й повернення в нуль
+                gsap.to(target, {
+                    duration: 0.35,
+                    x: 0, y: 0, rotation: 0, skewX: 0, scale: 1,
+                    ease: 'power3.out'
+                });
+            }
+        });
+    };
+
+    // Тригеримо, коли секція зʼявляється у вʼюпорті
+    ScrollTrigger.create({
+        trigger: '.billboard-section',
+        start: 'top 80%',
+        onEnter: bigShake,
+        onEnterBack: bigShake,   // ще раз, якщо прокрутив назад
+        // прибери цей рядок, якщо хочеш лише один раз:
+        // once: true
+    });
+</script>
+
 
 <!-- ===== POPUP logic + конфеті ===== -->
 <script>
