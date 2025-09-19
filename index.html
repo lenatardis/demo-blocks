@@ -201,6 +201,65 @@
             pointer-events: auto;
         }
 
+        /* обгортка для аури */
+        .postbox-wrap{
+            position: relative;
+            display: inline-block;
+            height: 25%;
+        }
+
+        /* дві хвилі: внутрішнє світіння та зовнішній пульс */
+        .postbox-wrap::before,
+        .postbox-wrap::after{
+            content:"";
+            position:absolute; inset:-8%;
+            border-radius:50%;
+            pointer-events:none;
+        }
+
+        /* м’яке постійне світіння */
+        .postbox-wrap::before{
+            background: radial-gradient(closest-side, #ff3b3b88 0%, #ff3b3b33 45%, transparent 70%);
+            filter: blur(2px);
+            animation: glow 2.4s ease-in-out infinite;
+        }
+
+        /* кільце, що розширюється */
+        .postbox-wrap::after{
+            border: 3px solid #ff7a00;
+            box-shadow: 0 0 18px #ff7a00;
+            opacity:.0;
+            transform: scale(.8);
+            animation: ring 1.6s ease-out infinite;
+        }
+
+        /* легкий підскок самої іконки, щоб привертати увагу */
+        .postbox-wrap > img{
+            animation: floaty 3.2s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        /* підсилюємо при ховері/фокусі */
+        .postbox-wrap:hover::before{ filter: blur(3px); }
+        .postbox-wrap:hover::after{ box-shadow: 0 0 22px #ff9b2a; }
+        .postbox-wrap:hover > img{ animation-duration: 2.2s; }
+
+        /* ключові кадри */
+        @keyframes glow{
+            0%,100%{ opacity:.55; transform: scale(1); }
+            50%    { opacity:.85; transform: scale(1.04); }
+        }
+        @keyframes ring{
+            0%  { opacity:.65; transform: scale(.85); }
+            80% { opacity:0;  transform: scale(1.25); }
+            100%{ opacity:0;  transform: scale(1.25); }
+        }
+        @keyframes floaty{
+            0%,100%{ transform: translateY(0) rotate(0deg); }
+            50%    { transform: translateY(-6px) rotate(-1deg); }
+        }
+
+
         /* ======= COMIC POPUP (твій, без змін у розмітці) ======= */
         .pc-backdrop[hidden], .pc-root[hidden] {
             display: none !important;
@@ -623,7 +682,9 @@
         <div class="band" id="treesBand">
             <img class="treeImg sm" src="./assets/tree.svg" alt="Tree" style="margin-left:6vw">
             <img class="treeImg" src="./assets/tree.svg" alt="Tree">
-            <img id="postbox" class="treeImg xs postbox-btn" src="./assets/postbox.svg" alt="Postbox">
+            <div class="postbox-wrap">
+                <img id="postbox" class="treeImg postbox-btn" src="./assets/postbox.svg" alt="Postbox">
+            </div>
             <img class="treeImg flip" src="./assets/tree.svg" alt="Tree">
             <img class="treeImg" src="./assets/tree.svg" alt="Tree">
             <img class="treeImg sm" src="./assets/tree.svg" alt="Tree">
