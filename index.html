@@ -17,6 +17,7 @@
             --char-drop: clamp(28px, 5vh, 72px);
             --cloud-h: 24%;
             --cloud-rise: 46vh;
+            --header-h : 64px;
         }
 
         html, body {
@@ -855,7 +856,7 @@
         body{ padding-top: 64px; }
 
         /* щоб якір ставав нижче хедера при нативному scrollIntoView */
-        section, .stage{ scroll-margin-top: 72px; }
+        section, .stage{ scroll-margin-top: var(--header-h); }
 
         @media (max-width:780px){
             .site-header{ height: 58px; padding: 0 12px; }
@@ -883,7 +884,6 @@
 </header>
 
 
-<section><h1>Прокрути вниз — GSAP паралакс</h1></section>
 
 <div class="stage" id="stage">
     <!-- Небо -->
@@ -1166,52 +1166,69 @@
 </script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollToPlugin.min.js"></script>
 <script>
-    gsap.registerPlugin(ScrollToPlugin);
+    gsap.registerPlugin(ScrollToPlugin, ScrollTrigger);
 
-    // клік по меню -> плавний скрол з урахуванням висоти хедера
     const header = document.getElementById('siteHeader');
     const links  = document.querySelectorAll('.nav-link');
+
+    // поточна висота хедера (округлена, без “+7” та інших запасів)
+    const headerH = () => Math.round(header.getBoundingClientRect().height);
+
+    // синхронізуємо CSS-змінну для scroll-margin-top
+    function syncHeaderVar(){
+        document.documentElement.style.setProperty('--header-h', headerH() + 'px');
+    }
+    syncHeaderVar();
+    addEventListener('resize', syncHeaderVar);
+    addEventListener('load', () => { syncHeaderVar(); ScrollTrigger.refresh(); });
+
+    // плавний скрол по кліку меню/логотипу з точним відступом = висоті хедера
+    function smoothTo(el){
+        if(!el) return;
+        gsap.to(window, {
+            duration: 0.8,
+            ease: 'power2.out',
+            scrollTo: { y: el, offsetY: headerH() }
+        });
+    }
 
     links.forEach(a => {
         a.addEventListener('click', (e) => {
             e.preventDefault();
-            const target = document.querySelector(a.dataset.target || a.getAttribute('href'));
-            if(!target) return;
-
-            const offsetY = header.offsetHeight + 6; // невеликий зазор
-            gsap.to(window, {
-                duration: 0.8,
-                ease: 'power2.out',
-                scrollTo: { y: target, offsetY }
-            });
+            smoothTo(document.querySelector(a.dataset.target || a.getAttribute('href')));
         });
     });
 
-    // підсвітка активного пункту меню під час скролу
-    [
+    document.querySelector('.logo')?.addEventListener('click', (e)=>{
+        e.preventDefault();
+        smoothTo(document.querySelector(e.currentTarget.getAttribute('href')));
+    });
+
+    // підсвітка активного пункту: активуй, коли ВЕРХ секції пройде під НИЗом хедера,
+    // і тримай активним до моменту, коли НИЗ секції підійде до НИЗу хедера.
+    const map = [
         {id:'#stage',     link:'[data-target="#stage"]'},
         {id:'#phone',     link:'[data-target="#phone"]'},
         {id:'#gorilla',   link:'[data-target="#gorilla"]'},
         {id:'#char-2',    link:'[data-target="#char-2"]'},
         {id:'#billboard', link:'[data-target="#billboard"]'},
-    ].forEach(({id, link})=>{
-        const el = document.querySelector(id);
-        const a  = document.querySelector(link);
-        if(!el || !a) return;
+    ];
+
+    map.forEach(({id, link})=>{
+        const section = document.querySelector(id);
+        const anchor  = document.querySelector(link);
+        if(!section || !anchor) return;
 
         ScrollTrigger.create({
-            trigger: el,
-            start: 'top center',
-            end: 'bottom center',
-            onEnter:  () => setActive(a),
-            onEnterBack: () => setActive(a)
+            trigger: section,
+            start: () => `top+=${headerH()} top`,
+            end:   () => `bottom-=${headerH()} top`,
+            toggleClass: { targets: anchor, className: 'active' }
         });
     });
-
-    function setActive(activeLink){
-        links.forEach(l => l.classList.toggle('active', l === activeLink));
-    }
 </script>
+
+
 
 
 
