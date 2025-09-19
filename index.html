@@ -864,10 +864,71 @@
             .nav-link{ height: 34px; padding: 0 10px; font-size: 14px; }
         }
 
+        /* ===== FAQ ===== */
+        .faq-section{
+            min-height: 80vh;
+            display: grid;
+            place-items: center;
+            background: radial-gradient(1100px 520px at 70% 15%, #1d2a66 0%, #0b1020 62%);
+            padding: 40px 16px;
+        }
+        .faq-wrap{
+            width: min(820px, 92vw);
+        }
+        .faq-title{
+            margin: 0 0 18px;
+            font-family: "Bangers", cursive;
+            letter-spacing: .6px;
+            font-size: clamp(34px, 5vw, 56px);
+            text-shadow: 2px 2px 0 #111;
+        }
 
+        .faq-item{
+            border: 2px solid rgba(255,255,255,.12);
+            border-radius: 14px;
+            background: rgba(255,255,255,.04);
+            box-shadow: 0 6px 18px rgba(0,0,0,.28) inset;
+            margin: 12px 0;
+            overflow: hidden;
+            transition: border-color .2s ease, background .2s ease;
+        }
+        .faq-item[open]{ background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.22); }
 
+        .faq-q{
+            list-style: none;
+            cursor: pointer;
+            padding: 16px 18px;
+            font-weight: 800;
+            letter-spacing: .2px;
+            position: relative;
+        }
+        .faq-q::-webkit-details-marker{ display:none; }
 
+        /* плюс/мінус */
+        .faq-q::after{
+            content:"+";
+            position:absolute; right:16px; top:50%;
+            transform: translateY(-50%);
+            font-weight: 900;
+        }
+        .faq-item[open] .faq-q::after{ content:"–"; }
 
+        /* відповідь з м’яким відкриттям */
+        .faq-a{
+            padding: 20px;
+            color: #cfd6ff;
+            line-height: 1.6;
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows .28s ease;
+        }
+        .faq-item[open] .faq-a{ grid-template-rows: 1fr; }
+        .faq-a > *{ overflow: hidden; }
+
+        /* невеликий «комікс»-акцент */
+        .faq-q{
+            background: darkslateblue;
+        }
     </style>
 </head>
 <body>
@@ -880,6 +941,7 @@
         <a class="nav-link" href="#gorilla"      data-target="#gorilla">Горіла</a>
         <a class="nav-link" href="#char-2"       data-target="#char-2">Кібер бой</a>
         <a class="nav-link" href="#billboard"    data-target="#billboard">Відео</a>
+        <a class="nav-link" href="#faq" data-target="#faq">FAQ</a>
     </nav>
 </header>
 
@@ -1031,6 +1093,33 @@
         </div>
     </div>
 </section>
+<!-- ===== FAQ ===== -->
+<section class="faq-section" id="faq" aria-label="Поширені питання">
+    <div class="faq-wrap">
+        <h2 class="faq-title">FAQ</h2>
+
+        <details class="faq-item">
+            <summary class="faq-q">Питання 1?</summary>
+            <div class="faq-a">Відповідь 1
+            </div>
+        </details>
+
+        <details class="faq-item">
+            <summary class="faq-q">Питання 2 </summary>
+            <div class="faq-a">
+                Відповідь 2
+            </div>
+        </details>
+
+        <details class="faq-item">
+            <summary class="faq-q">Питання 3</summary>
+            <div class="faq-a">
+              Відповідь 3
+            </div>
+        </details>
+    </div>
+</section>
+
 
 
 <!-- ===== POPUP (твій, без змін) ===== -->
@@ -1216,7 +1305,7 @@
     });
 
     // секції для спостереження
-    const sections = ['#stage','#phone','#gorilla','#char-2','#billboard'];
+    const sections = ['#stage','#phone','#gorilla','#char-2','#billboard', '#faq'];
 
     // головний горизонтальний паралакс — додай anticipatePin, щоб інші тригери не «глючили»
 
@@ -1225,7 +1314,7 @@
     // --- НАЙСТАБІЛЬНІШИЙ СПОСІБ АКТИВУ ---
     // що впритул під хедером – те активне (незалежно від pin/transform)
 
-    const SECTIONS = ['#stage', '#phone', '#gorilla', '#char-2', '#billboard'];
+    const SECTIONS = ['#stage', '#phone', '#gorilla', '#char-2', '#billboard', '#faq'];
     let currentActive = null;
     let rafRunning = false;
 
