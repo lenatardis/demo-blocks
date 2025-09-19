@@ -1325,6 +1325,8 @@
             repeat:1, yoyo:true, repeatDelay: 1.6
         }, 0.9);
 
+    gorillaTl.timeScale(2.8);
+
     // Запуск тільки коли секція в полі зору (щоб не їсти ресурси дарма)
     ScrollTrigger.create({
         trigger: ".character-section",
@@ -1362,7 +1364,7 @@
     const jumpTl = gsap.timeline({
         paused: true,
         repeat: -1,
-        repeatDelay: 0.25
+        repeatDelay: 0.1
     });
 
     jumpTl
@@ -1381,6 +1383,8 @@
         .to(".char2-img", { scaleY: 0.90, scaleX: 1.06, duration: 0.09, ease: "power2.in", transformOrigin:"50% 100%" }, 0.97)
         .to(".char2-img", { scaleY: 1, scaleX: 1, duration: 0.18, ease: "back.out(3)" }, 1.06)
         .to(".char2-shadow", { scaleX: 1, opacity: 0.38, duration: 0.18, ease: "power2.out" }, 1.06);
+
+    jumpTl.timeScale(1.5);
 
     // запускаємо тільки коли секція у в’юпорті
     ScrollTrigger.create({
