@@ -342,6 +342,10 @@
                 border: 5px solid #111;
                 max-height: 82vh;
             }
+
+            .pc-sub {
+                display: block;
+            }
         }
 
         .pc-root::before {
@@ -406,6 +410,7 @@
         }
 
         .pc-sub {
+            display: none;
             margin: 8px 2px 12px;
             font-weight: 600;
             color: #222;
@@ -1114,6 +1119,25 @@
             transform: rotate(-45deg);
         }
 
+        /* Ховати хедер при відкритому попапі (тільки мобілка) */
+        @media (max-width:780px){
+            .site-header{
+                transition: transform .22s ease; /* щоб з'їжджав плавно */
+            }
+            html.popup-open .site-header{
+                transform: translateY(-100%);
+            }
+            /* на всякий випадок блокуємо випадаюче меню */
+            html.popup-open .main-nav{
+                opacity: 0 !important;
+                pointer-events: none !important;
+            }
+        }
+
+        /* popup поверх усього (хедер має z-index:10000) */
+        .pc-backdrop{ z-index: 10002; }
+        .pc-root{ z-index: 10003; }
+
 
         /* ===== FAQ ===== */
         .faq-section {
@@ -1517,20 +1541,27 @@
         });
 </script>
 <script>
-    // свайп по сцені #stage: вліво = скрол вгору, вправо = скрол вниз
+    // свайп по сцені #stage: ліворуч = скрол вниз (вперед), праворуч = скрол вгору (назад)
     (function(){
         if (!window.matchMedia('(max-width:780px)').matches) return;
 
         const stage = document.getElementById('stage');
-        let x0 = null, y0 = null, t0 = 0;
+        let x0 = null, y0 = null;
+
+        function headerH(){
+            const h = document.getElementById('siteHeader');
+            return h ? Math.round(h.getBoundingClientRect().height) : 0;
+        }
 
         function start(e){
             const t = e.touches && e.touches[0]; if(!t) return;
-            x0 = t.clientX; y0 = t.clientY; t0 = performance.now();
+            x0 = t.clientX; y0 = t.clientY;
         }
         function end(e){
             if (x0==null) return;
-            const t = (e.changedTouches && e.changedTouches[0]) || e.touches?.[0]; if(!t) { x0=y0=null; return; }
+            const t = (e.changedTouches && e.changedTouches[0]) || e.touches?.[0];
+            if(!t){ x0=y0=null; return; }
+
             const dx = t.clientX - x0;
             const dy = Math.abs(t.clientY - y0 || 0);
 
@@ -1539,9 +1570,22 @@
                 const ST = ScrollTrigger.getById('stageParallax');
                 const curr = window.scrollY;
                 const step = Math.max(innerHeight*0.45, Math.min(innerHeight*0.9, Math.abs(dx)*8));
-                const delta = dx < 0 ? -step : step; // вліво — вгору; вправо — вниз
-                const target = gsap.utils.clamp(ST.start, ST.end, curr + delta);
-                gsap.to(window, { duration:.55, ease:"power2.out", scrollTo: target });
+
+                // НОВА логіка: ліворуч (dx < 0) — вниз/вперед, праворуч — вгору/назад
+                const delta = dx < 0 ? step : -step;
+                let target = curr + delta;
+
+                // Якщо просимося «далі за кінець» сцени свайпом ліворуч — переходимо на наступну секцію
+                if (dx < 0 && curr >= (ST.end - 4)) {
+                    gsap.to(window, {
+                        duration: 0.65,
+                        ease: "power2.out",
+                        scrollTo: { y: "#phone", offsetY: headerH() }
+                    });
+                } else {
+                    target = gsap.utils.clamp(ST.start, ST.end, target);
+                    gsap.to(window, { duration:.55, ease:"power2.out", scrollTo: target });
+                }
             }
             x0 = y0 = null;
         }
@@ -1900,7 +1944,18 @@
         const popup = document.getElementById('pc-popup');
         const backdrop = document.getElementById('pc-backdrop');
         const closeBtn = document.getElementById('pc-close');
+        const navToggleEl = document.getElementById('navToggle');
         let lastFocus;
+
+        function hideHeaderForPopup(){
+            document.documentElement.classList.add('popup-open');
+            // закриємо бургер, якщо був відкритий
+            document.documentElement.classList.remove('nav-open');
+            navToggleEl?.setAttribute('aria-expanded','false');
+        }
+        function showHeaderAfterPopup(){
+            document.documentElement.classList.remove('popup-open');
+        }
 
         const open = () => {
             lastFocus = document.activeElement;
@@ -1913,6 +1968,7 @@
             });
             document.body.style.overflow = 'hidden';
             setTimeout(() => document.getElementById('pc-name')?.focus(), 60);
+            hideHeaderForPopup();
             pcConfetti();
         };
         const close = () => {
@@ -1921,6 +1977,7 @@
             setTimeout(() => {
                 popup.hidden = true;
                 backdrop.hidden = true;
+                showHeaderAfterPopup();
                 lastFocus && lastFocus.focus?.();
             }, 200);
         };
