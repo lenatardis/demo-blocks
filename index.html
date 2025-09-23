@@ -293,6 +293,36 @@
             }
         }
 
+        /*правки (додати більше неба і зафіксувати лого */
+
+        /* трохи «неба» зверху у першій сцені */
+      /*  #stage { --sky-top-space: clamp(40px, 1vh, 180px); }*/
+
+        /* зсуваємо всі паралакс-стрічки сцени #stage вниз на однакову величину */
+        #skyBand     { transform: translateY(var(--sky-top-space)); }
+        #cloudsBand  { transform: translateY(calc(var(--sky-top-space) * 0.6)); }
+        #treesBand   { transform: translateY(calc(var(--sky-top-space) * 0.15)); } /* за бажанням: 0 */
+
+        /* піднімаємо героїв у ПЕРШІЙ сцені (щоб не обрізались) */
+        #stage { --char-drop: clamp(12px, 3vh, 40px); }
+
+        /* логотип у небі (поверх шарів) */
+        .stage-logo{
+            position: absolute;
+            top: calc(var(--header-h) + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 6;                /* вище за #chars (z-index:4) і псевдо-тінь сцени (z-index:3) */
+            pointer-events: none;      /* щоб не заважав свайпам/клікам */
+        }
+        .stage-logo img{
+            width: clamp(140px, 32vw, 360px);
+            height: auto;
+            display: block;
+            filter: drop-shadow(0 6px 14px rgba(0,0,0,.25));
+        }
+
+
 
         /* ======= COMIC POPUP (твій, без змін у розмітці) ======= */
         .pc-backdrop[hidden], .pc-root[hidden] {
@@ -1250,6 +1280,10 @@
 
 
 <div class="stage" id="stage">
+    <div class="stage-logo">
+        <img src="./assets/fighton.png" alt="FightTON logo">
+    </div>
+
     <!-- Небо -->
     <div class="layer" id="sky">
         <div class="band" id="skyBand"></div>
